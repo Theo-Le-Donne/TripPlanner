@@ -5,13 +5,19 @@ Ce fut l'occasion d'approfondir mes connaissances en développement front-end et
 <br/>
 ## Demo
 Selection de destination 
+<br/>
 ![Alt Text](https://github.com/theo-le-donne/TripPlanner/blob/master/assets/gifDest.gif)
+<br/>
 Selection de dates
+<br/>
 ![Alt Text](https://github.com/theo-le-donne/TripPlanner/blob/master/assets/gifDest.gif)
+<br/>
 Selection de passagers
+<br/>
 ![Alt Text](https://github.com/theo-le-donne/TripPlanner/blob/master/assets/gifDest.gif)
 
-
+<br/>
+<br/>
 
 Ce projet utilise :
 - Vue.js 2.5
