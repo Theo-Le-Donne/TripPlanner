@@ -10,11 +10,11 @@ Selection de destination
 <br/>
 Selection de dates
 <br/>
-![Alt Text](https://github.com/theo-le-donne/TripPlanner/blob/master/assets/gifDest.gif)
+![Alt Text](https://github.com/theo-le-donne/TripPlanner/blob/master/assets/gifDate.gif)
 <br/>
 Selection de passagers
 <br/>
-![Alt Text](https://github.com/theo-le-donne/TripPlanner/blob/master/assets/gifDest.gif)
+![Alt Text](https://github.com/theo-le-donne/TripPlanner/blob/master/assets/gifPass.gif)
 
 <br/>
 <br/>
