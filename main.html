@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TripPlanner</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css"
+    integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel='stylesheet' href='https://unpkg.com/v-calendar/lib/v-calendar.min.css'>
+  <link rel='stylesheet' href='https://unpkg.com/element-ui@2.4.2/lib/theme-chalk/index.css'>
+  <link rel="stylesheet" href="main.css">
+</head>
+
+<body background="assets/background.jpg">
+  <div v-cloak class="main" id="app">
+    <div class="header center my-4">
+      <h1>Plan your trip across Europe !</h1>
+    </div>
+
+    <div class="search ">
+      <div class="left-panel">
+        <span class="mb-2">Where ?</span>
+        <form class="form-places mb-4">
+          <label for="departurePlace" class="bmd-label-floating">From :</label>
+          <input type="text" class="form-control mb-1" id="departurePlace" autocomplete="disabled" v-model="departureQuery" @focus="loadPopularPlaces('departurePlaces','')"
+            @keyup="lookupPlaces('departureQuery','departurePlaces')" @click="selectText('departurePlace')" >
+          <label for="arrival-place" class="bmd-label-floating">To :</label>
+          <input type="text" class="form-control" id="arrival-place" autocomplete="disabled" v-model="arrivalQuery" @focus="loadPopularPlaces('arrivalPlaces','from/'+departurePlaces[0].unique_name+'/')"
+            @keyup="lookupPlaces('arrivalQuery','arrivalPlaces')" @click="selectText('arrival-place') ">
+        </form>
+        <br/>
+        <span class="mb-2">When ?</span>
+        <form class="form-dates">
+          <label for="departure-date" class="bmd-label-floating" id="departure-label">Departure date :</label>
+          <input type="text" class="form-control mb-1" id="departure-date" autocomplete="disabled" v-model="departureDateQuery" @focus="showDepartureCalendar">
+          <label for="arrival-date" class="bmd-label-floating">Return date :</label>
+          <input type="text" class="form-control" id="arrival-date" autocomplete="disabled" v-model="arrivalDateQuery" @focus="showArrivalCalendar">
+        </form>
+
+
+        <div class="passengers">
+          <span v-cloak>{{passengers.length}} Passenger</span>
+          <button type="button " class="btn btn-primary btn-manage my-3" id="btn-manage-passengers" @click="showManagePassengers">
+            <span>Manage Passengers</span>
+            <i class="material-icons manage-icon">
+              perm_identity
+            </i>
+          </button>
+        </div>
+
+        <button type="button" class="btn btn-raised btn-primary btn-search my-3">Search</button>
+
+      </div>
+
+      <div class="right-panel">
+        <div class="welcome" v-if="welcome">
+          <h2 class="my-2"> Welcome</h2>
+          <span class="my-2">
+              Project realised for TicTacTrip job application
+          </span> 
+          <br/>
+          <br/>
+          <br/>
+          <h4 class="my-2">Where will you go next ?</h4>
+        </div>
+        <ul class="departurePlacesList" v-if="departurePlacesList">
+          <div v-cloak class="mb-3 text-center text-truncate">- Choose a place of departure -</div>
+          <li v-cloak v-for="place in departurePlaces" @click="selectPlace(place.local_name,'departureQuery','arrival-place')" class="btn btn-block btn-place text-truncate">
+            <span class="btn-place-primary">{{place.local_name.split(",")[0]+", "}}</span>
+            <span class="btn-place-secondary">{{place.local_name.split(",")[2]}} </span>
+          </li>
+        </ul>
+
+        <ul class="arrivalPlacesList" v-if="arrivalPlacesList">
+          <div v-cloak class="mb-3 text-center">- Choose a place of arrival -</div>
+          <li v-cloak v-for="place in arrivalPlaces" @click="selectPlace(place.local_name,'arrivalQuery','departure-date')" class="btn btn-block btn-place text-truncate">
+            <span class="btn-place-primary">{{place.local_name.split(",")[0]+", "}}</span>
+            <span class="btn-place-secondary">{{place.local_name.split(",")[2]}} </span>
+          </li>
+        </ul>
+
+        <div class="calendar" v-if="departureCalendar">
+          <div v-cloak class="mb-3 text-center">- Pick a departure date -</div>
+          <v-calendar :mode='mode' v-model='selectedDate' :attributes='attrs' @dayclick='departureDayClicked'></v-calendar>
+          <el-time-select class="my-3" id="departureTime" v-model="departureTime" :picker-options="{
+            start: '06:00',
+            step: '02:00',
+            end: '23:00'
+          }" placeholder="Departure time">
+          </el-time-select>
+        </div>
+
+        <div class="calendar" v-if="arrivalCalendar">
+          <div v-cloak class="mb-3 text-center">- Pick a return date -</div>
+          <v-calendar :mode='mode' v-model='selectedDate' :attributes='attrs' @dayclick="arrivalDayClicked"></v-calendar>
+          <el-time-select class="my-3" id="arrivalTime" v-model="arrivalTime" :picker-options="{
+            start: '06:00',
+            step: '02:00',
+            end: '23:00'
+          }" placeholder="Return time">
+          </el-time-select>
+          <button v-cloak type="button" class="btn btn-sm btn-raised btn-primary btn-oneway" @click="oneWayClicked">One-Way</button>
+        </div>
+
+        <ul class="manage-passengers" v-if="managePassengers">
+          <div v-cloak class="mb-3 text-center">- Manage passengers -</div>
+
+          <li v-cloak v-for="(passenger, index) in passengers">
+            <div class="form-inline manage-passenger">
+              <div class="form-group passenger">
+                <button type="button" class="btn btn-primary bmd-btn-icon bmd-btn-icon-sm mr-1" @click="removePassenger(index)">
+                  <i class="material-icons">close</i>
+                </button>
+                <div class="form-group">
+                  <span>{{index+1}} -</span>
+                </div>
+                <div class="form-group ml-2">
+                  <select class="form-control" id="selectPassenger" :required="true" @change="changeCategory(index,$event)">
+                    <option v-for="option in passengerCategory" v-bind:value="option.id" :selected="option.id == passenger.category">{{ option.text }} </option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group membership">
+                <button type="button" class="btn btn-sm btn-primary btn-membership">
+                  <span>Discount cards</span>
+                  <i class="material-icons membership-icon">
+                    card_membership
+                  </i>
+                </button>
+              </div>
+            </div>
+            <br/>
+          </li>
+
+          <button v-cloak type="button" class="btn btn-primary bmd-btn-fab btn-add-passenger m-4" @click="addPassenger">
+            <i class="material-icons">person_add</i>
+          </button>
+        </ul>
+
+
+      </div>
+
+    </div>
+  </div>
+  <div id="snackbar">Cannot add more passengers</div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+  crossorigin="anonymous"></script>
+<script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U"
+  crossorigin="anonymous"></script>
+<script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9"
+  crossorigin="anonymous"></script>
+<script>
+  $(document).ready(function () {
+    $('body').bootstrapMaterialDesign();
+  });
+</script>
+<script src="https://unpkg.com/vue@2.0.3/dist/vue.js"></script>
+<script src="https://unpkg.com/axios@0.12.0/dist/axios.min.js"></script>
+<script src="https://unpkg.com/lodash@4.13.1/lodash.min.js"></script>
+<script src='https://unpkg.com/vue/dist/vue.js'></script>
+<script src='https://unpkg.com/v-calendar'></script>
+<script src="https://unpkg.com/element-ui@2.4.2/lib/index.js"></script>
+
+
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      departureQuery: '',
+      arrivalQuery: '',
+      departureDateQuery: '',
+      arrivalDateQuery: '',
+      departureTime: '',
+      arrivalTime: '',
+      departurePlaces: [],
+      arrivalPlaces: [],
+      welcome:true,
+      departurePlacesList: false,
+      arrivalPlacesList: false,
+      departureCalendar: false,
+      arrivalCalendar: false,
+      managePassengers: false,
+
+      mode: 'single',
+      selectedDate: null,
+      passengerCategory: [{
+          id: 0,
+          text: 'Youth (0-25)'
+        },
+        {
+          id: 1,
+          text: 'Adult (26-59)'
+        },
+        {
+          id: 2,
+          text: 'Senior (60+)'
+        }
+      ],
+      passengers: [{
+        category: 1
+      }],
+      attrs: [{
+          dates: {
+            start: null,
+            end: new Date()
+          },
+          contentStyle: {
+            color: 'grey'
+          }
+        },
+        {
+          dates: null,
+          highlight: {
+            backgroundColor: '#009B8B'
+          },
+          contentStyle: {
+            color: '#fafafa',
+          },
+          popover: {
+            label: 'Departure',
+          }
+        },
+        {
+          dates: null,
+          highlight: {
+            backgroundColor: '#009B8B'
+          },
+          contentStyle: {
+            color: '#fafafa',
+          },
+          popover: {
+            label: 'Return',
+          }
+        }
+      ]
+    },
+
+    methods: {
+      autoComplete: function (query) {
+        var app = this
+        if (app.$data[query].length > 0 && !app.$data[query].includes(',')) {
+          axios.get('http://www-uat.tictactrip.eu/api/cities/autocomplete/?q=' + app.$data[query])
+            .then(function (response) {
+              app.$data[query] = response.data[0].local_name
+            })
+            .catch(function (error) {
+              app.$data[query] = [{
+                local_name: "Error"
+              }]
+            })
+
+
+        }
+      },
+
+      formatDate: function(day){
+        var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+            'October', 'November', 'December']
+        return days[day.date.getDay()] + ", " + months[day.date.getMonth()] + " " + day.date.getDate() + ", " + day.date.getFullYear()
+      },
+
+      departureDayClicked: function (day) {
+        if (day.date > new Date()) {
+          this.departureDateQuery = this.formatDate(day)
+          this.attrs[1].dates = day.date
+          document.getElementById('departureTime').focus()
+        }
+
+      },
+
+      arrivalDayClicked: function (day) {
+        if (day.date > new Date()) {
+          this.arrivalDateQuery = this.formatDate(day)
+          this.attrs[2].dates = day.date
+          document.getElementById('arrivalTime').focus()
+        }
+      },
+
+      oneWayClicked: function () {
+        this.attrs[2].dates = null
+        this.arrivalDateQuery = 'ONE WAY'
+
+      },
+
+      showManagePassengers: function () {
+        this.welcome=false;
+        this.arrivalPlacesList = false;
+        this.arrivalCalendar = false;
+        this.departureCalendar = false;
+        this.departurePlacesList = false;
+        this.managePassengers = true;
+      },
+
+      showDepartureCalendar: function () {
+        this.welcome=false;
+        this.departurePlacesList = false;
+        this.arrivalPlacesList = false;
+        this.arrivalCalendar = false;
+        this.managePassengers = false;
+        this.departureCalendar = true;
+      },
+
+      showArrivalCalendar: function () {
+        this.welcome=false;
+        this.departurePlacesList = false;
+        this.arrivalPlacesList = false;
+        this.departureCalendar = false;
+        this.managePassengers = false;
+        this.arrivalCalendar = true;
+      },
+
+      show: function(div) {
+        this.welcome=false;
+        this.departureCalendar = false;
+        this.arrivalCalendar = false;
+        this.managePassengers = false;
+        if (div=='departurePlaces') {
+          this.arrivalPlacesList = false;
+          this.departurePlacesList = true;
+        }
+        else if (div=='arrivalPlaces') {
+          this.departurePlacesList = false;
+          this.arrivalPlacesList = true;
+        }
+      },
+
+      changeCategory: function (index, e) {
+        this.passengers[index].category = parseInt(e.target.value)
+      },
+
+      addPassenger: function () {
+        if (this.passengers.length < 10) this.passengers.push({
+          category: 1
+        })
+        else {
+          var x = document.getElementById("snackbar")
+          x.className = "show";
+          setTimeout(function () {
+            x.className = x.className.replace("show", "");
+          }, 3000);
+        }
+      },
+
+      removePassenger: function (index) {
+        this.$delete(this.passengers, index);
+      },
+
+      loadPopularPlaces: function (model,from) {
+        var app = this
+        console.log(from);
+        
+        axios.get('http://www-uat.tictactrip.eu/api/cities/popular/'+from+"10")
+          .then(function (response) {
+            app.$data[model] = response.data
+          })
+          .catch(function (error) {
+            app.$data[model] = [{
+              local_name: "Error"
+            }]
+          })
+        app.show(model)
+      },
+
+      lookupPlaces: _.debounce(function (query,placesList) {
+        var app = this
+        if (app.$data[query].length == 0) {
+          app.loadPopularPlaces(placesList,'')
+        } else {
+          app.$data[placesList] = [{
+            local_name: "Searching..."
+          }]
+          axios.get('http://www-uat.tictactrip.eu/api/cities/autocomplete/?q=' + app.$data[query])
+            .then(function (response) {
+              app.$data[placesList] = response.data
+            })
+            .catch(function (error) {
+              app.$data[placesList] = [{
+                local_name: "Error"
+              }]
+            })
+        }
+      }, 500),
+
+      selectPlace: function (place, query, nextFocus) {
+        this.$data[query] = place
+        document.getElementById(nextFocus).focus()
+      },
+
+      selectText: function(id){
+        document.getElementById(id).select()
+      }
+
+    },
+
+  })
+</script>
+
+</html>

@@ -1,0 +1,188 @@
+
+[v-cloak] { display:none; }
+
+body{
+    background-repeat:no-repeat;
+    background-size:cover;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 100%
+}
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 5% 2rem 5%;
+    overflow: scroll;
+
+}
+
+
+.header{
+    color: white;
+    text-shadow: 0px 1px 4px rgba(48, 50, 58, 0.6);
+}
+
+h1{
+    font-weight: bold;
+    text-align: center;
+    font-size: 4vw;
+}
+
+
+.search{
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(auto-fit,minmax(430px,1fr));
+    grid-gap: 2rem;
+}
+
+.bmd-form-group{
+    margin-bottom: 0rem;
+}
+
+.left-panel{
+    display: flex;
+    flex-direction: column;
+    background: white;
+    margin: 1rem;
+    padding: 2rem;
+    height: 600px;
+    border-radius: 6px
+}
+
+.form-places{
+    margin-bottom: 2rem;
+}
+
+.bmd-label-floating{
+    margin-bottom: 0;
+}
+
+.hidden-form{
+    opacity: 0;
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+}
+
+.passengers{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: baseline;
+}
+
+.manage-passengers{
+    text-align: center;
+}
+
+
+.manage-passenger{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+
+.btn-manage,.btn-membership{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-end;
+}
+
+.membership-icon{
+    margin-left: 0.4rem;
+}
+.manage-icon{
+    margin-left: 0.8rem;
+}
+
+
+
+.right-panel{
+    background: white;
+    margin: 1rem;
+    padding: 2rem;
+    height: 600px;
+    border-radius: 6px;
+    overflow: scroll;
+}
+
+.welcome{
+    text-align: center;
+}
+
+.calendar{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.btn-oneway{
+    margin-top: 1rem;
+}
+
+.btn-place{
+    text-align: start;
+}
+
+.btn-place-primary{
+    font-size: 1rem;
+}
+
+.btn-place-secondary{
+    font-size: 0.7rem;
+}
+
+#snackbar {
+    visibility: hidden; /* Hidden by default. Visible on click */
+    min-width: 250px; /* Set a default minimum width */
+    margin-left: -125px; /* Divide value of min-width by 2 */
+    background-color: #333; /* Black background color */
+    color: #fff; /* White text color */
+    text-align: center; /* Centered text */
+    border-radius: 2px; /* Rounded borders */
+    padding: 16px; /* Padding */
+    position: fixed; /* Sit on top of the screen */
+    z-index: 1; /* Add a z-index if needed */
+    left: 50%; /* Center the snackbar */
+    bottom: 30px; /* 30px from the bottom */
+}
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#snackbar.show {
+    visibility: visible; /* Show the snackbar */
+
+/* Add animation: Take 0.5 seconds to fade in and out the snackbar. 
+However, delay the fade out process for 2.5 seconds */
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+/* Animations to fade the snackbar in and out */
+@-webkit-keyframes fadein {
+    from {bottom: 0; opacity: 0;} 
+    to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+    from {bottom: 30px; opacity: 1;} 
+    to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
