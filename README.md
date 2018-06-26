@@ -27,4 +27,4 @@ Ce projet utilise :
 - Le plugin Vue.js [V-Calendar](https://github.com/nathanreyes/v-calendar) pour l'affichage de calendriers
 - La librairie de composants [Element](http://element.eleme.io/#/en-US) pour l'utilisation d'un *Time-Picker*
 
-Temps estimé pour la réalisation et l'apprentissage de Vue.js : 23h.
+Temps passé pour la réalisation et l'apprentissage de Vue.js : ~23h.
