@@ -4,7 +4,7 @@ Exercice d'UX/Front réalisé dans le cadre d'une candidature pour l'entreprise 
 Ce fut l'occasion d'approfondir mes connaissances en développement front-end et de découvrir **Vue.js**.
 <br/>
 ## Demo
-Selection de destination 
+Selection de destinations 
 <br/>
 ![Alt Text](https://github.com/theo-le-donne/TripPlanner/blob/master/assets/gifDest.gif)
 <br/>
