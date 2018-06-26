@@ -1,6 +1,6 @@
 # TripPlanner
 
-Exercice d'UX/Front réalisé dans le cadre d'un candidature pour l'entreprise **TicTacTrip**.
+Exercice d'UX/Front réalisé dans le cadre d'une candidature pour l'entreprise **TicTacTrip**.
 Ce fut l'occasion d'approfondir mes connaissances en développement front-end et de découvrir **Vue.js**.
 <br/>
 ## Demo
